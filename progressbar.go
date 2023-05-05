@@ -57,6 +57,7 @@ type state struct {
 
 type config struct {
 	max                  int64 // max number of the counter
+	already              int64 // Existing offset number of the counter
 	maxHumanized         string
 	maxHumanizedSuffix   string
 	width                int
@@ -626,6 +627,19 @@ func (p *ProgressBar) ChangeMax64(newMax int64) {
 	p.Add(0) // re-render
 }
 
+// ChangeAlready64 set size before download
+func (p *ProgressBar) ChangeAlready(already int) {
+	p.ChangeAlready64(int64(already))
+}
+
+// ChangeAlready64 set size before download
+// the same as ChangeAlready,
+// but takes in a int64
+func (p *ProgressBar) ChangeAlready64(already int64) {
+	p.config.already = already
+	p.Add(0)
+}
+
 // IsFinished returns true if progress bar is completed
 func (p *ProgressBar) IsFinished() bool {
 	return p.state.finished
@@ -735,7 +749,7 @@ func renderProgressBar(c config, s *state) (int, error) {
 		// if no average samples, or if finished,
 		// then average rate should be the total rate
 		if t := time.Since(s.startTime).Seconds(); t > 0 {
-			averageRate = s.currentBytes / t
+			averageRate = (s.currentBytes - float64(c.already)) / t
 		} else {
 			averageRate = 0
 		}
