@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/arrebole/progressbar"
 	"github.com/k0kubun/go-ansi"
-	"github.com/schollz/progressbar/v3"
 )
 
 func main() {
